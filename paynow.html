@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f9f9f9;
+      padding: 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    button {
+      background-color: #ff6600;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #ff4500;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Complete Your Payment</h1>
+    <div id="card-element"></div>
+    <button id="pay-button">Pay Now</button>
+    <p id="message"></p>
+  </div>
+
+  <script>
+    const stripe = Stripe("your_publishable_key_here");
+    const clientSecret = new URLSearchParams(window.location.search).get("client_secret");
+    const elements = stripe.elements();
+    const cardElement = elements.create("card");
+    cardElement.mount("#card-element");
+
+    document.getElementById("pay-button").addEventListener("click", async () => {
+      const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: { card: cardElement }
+      });
+
+      if (error) {
+        document.getElementById("message").textContent = "Payment failed: " + error.message;
+      } else {
+        document.getElementById("message").textContent = "Payment successful! Order confirmed.";
+      }
+    });
+  </script>
+</body>
+</html>

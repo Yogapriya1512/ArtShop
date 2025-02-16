@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Art Prints Store</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      text-align: center;
+      margin: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    .product {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+    button {
+      background: #ff6600;
+      color: white;
+      border: none;
+      padding: 10px;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #ff4500;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Buy Art Prints</h1>
+    <div id="products"></div>
+    <button onclick="goToCart()">Go to Cart</button>
+  </div>
+
+  <script>
+    const products = [
+      { id: 1, name: "Sunset Bliss", price: 499, image: "sunset.jpg" },
+      { id: 2, name: "Ocean Waves", price: 599, image: "ocean.jpg" },
+      { id: 3, name: "City Lights", price: 699, image: "city.jpg" }
+    ];
+
+    const productContainer = document.getElementById("products");
+
+    products.forEach(product => {
+      const productElement = document.createElement("div");
+      productElement.classList.add("product");
+      productElement.innerHTML = `
+        <img src="images/${product.image}" alt="${product.name}" width="200">
+        <h2>${product.name}</h2>
+        <p>₹${product.price}</p>
+        <button onclick="addToCart(${product.id}, '${product.name}', ${product.price})">Add to Cart</button>
+        <button onclick="buyNow(${product.id})">Buy Now</button>
+      `;
+      productContainer.appendChild(productElement);
+    });
+
+    function addToCart(id, name, price) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      cart.push({ id, name, price });
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert(`${name} added to cart!`);
+    }
+
+    function buyNow(productId) {
+      window.location.href = `checkout.html?product=${productId}`;
+    }
+
+    function goToCart() {
+      window.location.href = "checkout.html";
+    }
+  </script>
+</body>
+</html>

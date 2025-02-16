@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      text-align: center;
+      margin: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #ff6600;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #ff4500;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Checkout</h1>
+    <p>Total: ₹<span id="total">0</span></p>
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="email" id="email" placeholder="Your Email" required>
+    <input type="text" id="address" placeholder="Your Address" required>
+    <button onclick="processPayment()">Pay Now</button>
+  </div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let totalAmount = cart.reduce((sum, item) => sum + item.price, 0);
+    document.getElementById("total").innerText = totalAmount;
+
+    function processPayment() {
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const address = document.getElementById("address").value;
+
+      if (!name || !email || !address) {
+        alert("Please fill in all details");
+        return;
+      }
+
+      fetch("http://127.0.0.1:5000/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, address, cart })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.client_secret) {
+          alert("Payment Initiated! Redirecting...");
+          window.location.href = `payment.html?client_secret=${data.client_secret}`;
+        } else {
+          alert("Error: " + data.error);
+        }
+      })
+      .catch(error => console.error("Error:", error));
+    }
+  </script>
+</body>
+</html>
